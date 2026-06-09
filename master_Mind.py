@@ -7,7 +7,6 @@
 print("MasterMind")
 
 import random
-import os
 
 def admin_Login():
     with open("admin.env") as f:
