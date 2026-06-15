@@ -41,7 +41,7 @@ def play_Mastermind():
         options = ['1', '2', '3', '4', '5', '6']
         secret_Code = generate_Code()
 
-        print("Welcome to Mastermind with numbers!")
+        print("Welcome to bij Mastermind with numbers!")
         print("Use digits from 1 to 6")
         print("Example: 1234")
 
