@@ -1,9 +1,9 @@
 #!/bin/python3
-print("MasterMind")
-
 import random
 
-def admin_Login():
+print("MasterMind")
+
+def admin_Login(secret_Code):
     with open("admin.env") as f:
         regels = f.read().splitlines()
 
@@ -18,6 +18,7 @@ def admin_Login():
 
     if user == juiste_user and wachtwoord == juiste_pass:
         print("Ingelogd als admin!")
+        print(secret_Code)
         return True
     else:
         print("Onjuiste gegevens.")
@@ -47,36 +48,50 @@ def get_Feedback(secret, guess):
 
 def play_Mastermind():
     print("Welcome to Mastermind!")
-    print("Guess the 4-digit code. Each digit is from 1 to 6. You have 10 attempts.")
-    secret_Code = generate_Code()
+   
     attempts = 10
+    
+    # Standaard opties (vallen we op terug als invoer ongeldig is)
+    options = ['1', '2', '3', '4', '5', '6']
+    secret_Code = generate_Code()
+
+    
+    mode = input("Choose a mode (c for colors | n for numbers): ").strip().lower()
 
     if mode == 'c':
         options = ['R', 'G', 'B', 'Y', 'O', 'P']
         secret_Code = generate_Color_Code()
 
-        print("Welcome to Mastermind with colors!")
+        print("\nWelcome to Mastermind with colors!")
         print("Use: R, G, B, Y, O, P")
         print("Example: RGBY")
 
     else:
+        # We pakken automatisch 'n' (numbers) als standaard
         options = ['1', '2', '3', '4', '5', '6']
         secret_Code = generate_Code()
 
-        print("Welcome to bij Mastermind with numbers!")
+        print("\nWelcome to Mastermind with numbers!")
         print("Use digits from 1 to 6")
         print("Example: 1234")
-
+    
+    print(f"Guess the 4-digit/color code. You have {attempts} attempts.")
+    admin_Login(secret_Code)
+    
     for attempt in range(1, attempts + 1):
         valid_Guess = False
 
         while not valid_Guess:
-            guess = input(f"Attempt {attempt}: ").strip()
-            valid_Guess = len(guess) == 4 and all(c in "123456" for c in guess)
+            # .upper() zorgt ervoor dat 'rgby' automatisch 'RGBY' wordt
+            user_input = input(f"Attempt {attempt}: ").strip().upper()
+            guess = user_input.replace(" ", "").replace(",", "")
+            
+            # Controleer of de lengte 4 is EN of elk karakter in de actieve opties zit
+            valid_Guess = len(guess) == 4 and all(c in options for c in guess)
+            
             if not valid_Guess:
-                print("Invalid input. Enter 4 digits, each from 1 to 6.")
+                print(f"Invalid input. Enter 4 items using only: {', '.join(options)}")
         
-
         black, white = get_Feedback(secret_Code, guess)
         print(f"Black pegs: {black}, White pegs: {white}")
 
@@ -90,4 +105,4 @@ if __name__ == "__main__":
     again = 'Y'
     while again == 'Y':
         play_Mastermind()
-        again = input("Play again (Y/N)? ").upper()
+        again = input("Play again (Y/N)? ").upper().strip()
